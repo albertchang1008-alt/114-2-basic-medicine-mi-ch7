@@ -1,0 +1,947 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[CH7] 過敏反應與腫瘤免疫學</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        medical: {
+                            pink: '#F472B6',
+                            pinkHover: '#EC4899',
+                            blue: '#38BDF8',
+                            blueHover: '#0EA5E9',
+                            bg: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* 隱藏原生滾動條，保持畫面整潔 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-medical-bg text-slate-800 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-6 h-6 text-medical-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                <h1 class="text-xl font-bold text-slate-700">[CH7] 過敏 <span class="text-sm font-normal text-slate-500 ml-2">護理專題測驗</span></h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        
+        <!-- 登入視圖 -->
+        <section id="login-view" class="fade-in space-y-8 mt-6">
+            <!-- 登入卡片 -->
+            <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-center text-slate-700 mb-6">學生登入</h2>
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">姓名</label>
+                        <input type="text" id="student-name" placeholder="請輸入姓名" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-medical-pink focus:border-transparent transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">學號</label>
+                        <input type="text" id="student-id" placeholder="請輸入學號" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-medical-pink focus:border-transparent transition-all">
+                    </div>
+                    <button onclick="app.goToPrep()" class="w-full bg-medical-pink hover:bg-medical-pinkHover text-white font-bold py-3 px-4 rounded-lg shadow-md transition-colors mt-4">
+                        登入並開始複習
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 準備視圖 (重點複習 + 暖身) -->
+        <section id="prep-view" class="hidden fade-in space-y-8 mt-6">
+            <!-- 考前重點複習表格 -->
+            <div class="w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 border-t-4 border-medical-blue">
+                <div class="flex items-center gap-2 mb-6">
+                    <svg class="w-6 h-6 text-medical-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <h3 class="text-xl font-bold text-slate-700">四大過敏反應 重點總整理</h3>
+                </div>
+                
+                <!-- 桌面版：傳統表格排版 -->
+                <div class="hidden lg:block overflow-x-auto border border-slate-200 rounded-xl shadow-sm">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
+                        <thead>
+                            <tr class="bg-sky-50 text-slate-700">
+                                <th class="p-4 border-b border-slate-200 font-bold w-24">過敏類型</th>
+                                <th class="p-4 border-b border-slate-200 font-bold w-48">名稱與特性</th>
+                                <th class="p-4 border-b border-slate-200 font-bold w-48">主要參與物質 / 細胞</th>
+                                <th class="p-4 border-b border-slate-200 font-bold w-48">重點</th>
+                                <th class="p-4 border-b border-slate-200 font-bold w-48">臨床常見疾病與實例</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm text-slate-600 align-top">
+                            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+                                <td class="p-4 font-bold text-sky-700 text-base">第一型</td>
+                                <td class="p-4 font-medium text-slate-700">即發型過敏反應<br><span class="text-xs text-slate-400 font-normal">(最快，數分鐘內)</span></td>
+                                <td class="p-4">IgE、肥大細胞、嗜鹼性球、組織胺</td>
+                                <td class="p-4">一般過敏反應、發作最快、與 IgE 有關</td>
+                                <td class="p-4">氣喘、花粉熱、過敏性鼻炎、蕁麻疹、食物過敏、青黴素引起的過敏性休克</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+                                <td class="p-4 font-bold text-sky-700 text-base">第二型</td>
+                                <td class="p-4 font-medium text-slate-700">抗體媒介型細胞毒性反應 / 受體異常反應</td>
+                                <td class="p-4">IgG、IgM、補體、吞噬細胞</td>
+                                <td class="p-4">血液相關最常考、抗體直接攻擊細胞或受體</td>
+                                <td class="p-4">ABO輸血反應、新生兒溶血症、重症肌無力、古德帕斯氏症候群、格雷夫氏症</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+                                <td class="p-4 font-bold text-sky-700 text-base">第三型</td>
+                                <td class="p-4 font-medium text-slate-700">免疫複合物型過敏反應</td>
+                                <td class="p-4">IgG / IgM、免疫複合物、補體、中性球</td>
+                                <td class="p-4">免疫複合物沉積、常和血管、腎臟、關節發炎有關</td>
+                                <td class="p-4">血清病、阿爾楚氏反應、全身性紅斑狼瘡 (SLE)、鏈球菌感染後腎絲球腎炎</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-4 font-bold text-sky-700 text-base">第四型</td>
+                                <td class="p-4 font-medium text-slate-700">遲發型過敏反應<br><span class="text-xs text-slate-400 font-normal">(最慢，24～48小時)</span></td>
+                                <td class="p-4">T細胞、巨噬細胞</td>
+                                <td class="p-4">細胞免疫、唯一無抗體參與、反應最慢</td>
+                                <td class="p-4">接觸性皮膚炎、結核菌素皮膚試驗、器官移植排斥、第一型糖尿病、多發性硬化症</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 手機版：卡片式排版 -->
+                <div class="block lg:hidden space-y-5">
+                    <!-- 第一型卡片 -->
+                    <div class="bg-white border-2 border-slate-100 rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-sky-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center">
+                            <span class="font-black text-sky-700 text-lg">第一型</span>
+                            <span class="text-sm font-bold text-slate-700 text-right">即發型過敏反應<br><span class="text-xs text-slate-500 font-normal">(最快，數分鐘內)</span></span>
+                        </div>
+                        <div class="p-4 space-y-4 text-sm text-slate-600">
+                            <div>
+                                <h4 class="font-bold text-medical-blue mb-1 text-xs uppercase tracking-wide">▶ 參與物質 / 細胞</h4>
+                                <p class="font-medium text-slate-700">IgE、肥大細胞、嗜鹼性球、組織胺</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-medical-blue mb-1 text-xs uppercase tracking-wide">▶ 國考重點</h4>
+                                <p>一般過敏反應、發作最快、與 IgE 有關</p>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-2">
+                                <h4 class="font-bold text-slate-700 mb-1 text-xs uppercase tracking-wide">🏥 臨床常見疾病與實例</h4>
+                                <p class="font-medium text-rose-600">氣喘、花粉熱、過敏性鼻炎、蕁麻疹、食物過敏、青黴素引起的過敏性休克</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第二型卡片 -->
+                    <div class="bg-white border-2 border-slate-100 rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-sky-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center">
+                            <span class="font-black text-sky-700 text-lg">第二型</span>
+                            <span class="text-sm font-bold text-slate-700 text-right">抗體媒介型反應<br><span class="text-xs text-slate-500 font-normal">(細胞毒殺 / 受體異常)</span></span>
+                        </div>
+                        <div class="p-4 space-y-4 text-sm text-slate-600">
+                            <div>
+                                <h4 class="font-bold text-medical-blue mb-1 text-xs uppercase tracking-wide">▶ 參與物質 / 細胞</h4>
+                                <p class="font-medium text-slate-700">IgG、IgM、補體、吞噬細胞</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-medical-blue mb-1 text-xs uppercase tracking-wide">▶ 國考重點</h4>
+                                <p>血液相關最常考、抗體直接攻擊細胞或受體</p>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-2">
+                                <h4 class="font-bold text-slate-700 mb-1 text-xs uppercase tracking-wide">🏥 臨床常見疾病與實例</h4>
+                                <p class="font-medium text-rose-600">ABO輸血反應、新生兒溶血症、重症肌無力、古德帕斯氏症候群、格雷夫氏症</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第三型卡片 -->
+                    <div class="bg-white border-2 border-slate-100 rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-sky-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center">
+                            <span class="font-black text-sky-700 text-lg">第三型</span>
+                            <span class="text-sm font-bold text-slate-700 text-right">免疫複合物型過敏反應</span>
+                        </div>
+                        <div class="p-4 space-y-4 text-sm text-slate-600">
+                            <div>
+                                <h4 class="font-bold text-medical-blue mb-1 text-xs uppercase tracking-wide">▶ 參與物質 / 細胞</h4>
+                                <p class="font-medium text-slate-700">IgG / IgM、免疫複合物、補體、中性球</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-medical-blue mb-1 text-xs uppercase tracking-wide">▶ 國考重點</h4>
+                                <p>免疫複合物沉積、常和血管、腎臟、關節發炎有關</p>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-2">
+                                <h4 class="font-bold text-slate-700 mb-1 text-xs uppercase tracking-wide">🏥 臨床常見疾病與實例</h4>
+                                <p class="font-medium text-rose-600">血清病、阿爾楚氏反應、全身性紅斑狼瘡 (SLE)、鏈球菌感染後腎絲球腎炎</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第四型卡片 -->
+                    <div class="bg-white border-2 border-slate-100 rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-sky-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center">
+                            <span class="font-black text-sky-700 text-lg">第四型</span>
+                            <span class="text-sm font-bold text-slate-700 text-right">遲發型過敏反應<br><span class="text-xs text-slate-500 font-normal">(最慢，24～48小時)</span></span>
+                        </div>
+                        <div class="p-4 space-y-4 text-sm text-slate-600">
+                            <div>
+                                <h4 class="font-bold text-medical-blue mb-1 text-xs uppercase tracking-wide">▶ 參與物質 / 細胞</h4>
+                                <p class="font-medium text-slate-700">T細胞、巨噬細胞</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-medical-blue mb-1 text-xs uppercase tracking-wide">▶ 國考重點</h4>
+                                <p>細胞免疫、唯一無抗體參與、反應最慢</p>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-2">
+                                <h4 class="font-bold text-slate-700 mb-1 text-xs uppercase tracking-wide">🏥 臨床常見疾病與實例</h4>
+                                <p class="font-medium text-rose-600">接觸性皮膚炎、結核菌素皮膚試驗、器官移植排斥、第一型糖尿病、多發性硬化症</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 發生機轉文字說明區塊 -->
+                <div class="mt-8 bg-slate-50 rounded-xl p-5 border border-slate-200">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h4 class="text-lg font-bold text-slate-800">各型發生機轉詳細說明</h4>
+                    </div>
+                    <div class="space-y-4 text-sm text-slate-700 leading-relaxed">
+                        <p><span class="font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded mr-1">第一型</span>第一次接觸過敏原後，身體產生 IgE，IgE 附著在肥大細胞表面；再次接觸同一過敏原時，會使肥大細胞脫顆粒，釋放組織胺等發炎介質，造成血管擴張、通透性增加、支氣管收縮。</p>
+                        <p><span class="font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded mr-1">第二型</span>抗體直接對抗細胞表面或基底膜上的抗原，造成細胞被補體破壞、被吞噬，或使受體功能異常；不只是細胞被毒殺，也可能是受體被阻斷或過度刺激。</p>
+                        <p><span class="font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded mr-1">第三型</span>可溶性抗原與抗體結合形成免疫複合物，沉積在血管壁、腎絲球、關節等處，活化補體並引起發炎反應，造成組織損傷。</p>
+                        <p><span class="font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded mr-1">第四型</span>由致敏 T 細胞再次接觸抗原後釋放細胞激素，活化巨噬細胞並引起局部發炎；是唯一不靠抗體、而是由細胞媒介的過敏反應。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 暖身試題區塊 -->
+            <div class="w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 border-t-4 border-emerald-400">
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-xl font-bold text-slate-700">課前暖身試題</h3>
+                </div>
+                <p class="text-slate-500 text-sm mb-6">請完成以下 10 題基礎暖身，點擊選項後會立即顯示正確解答。完成後請點擊下方按鈕進入正式測驗。</p>
+                
+                <div id="warmup-container" class="space-y-6">
+                    <!-- 暖身試題由 JS 動態生成 -->
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+                    <button onclick="app.startFullQuiz()" class="bg-medical-pink hover:bg-medical-pinkHover text-white font-bold py-4 px-8 rounded-xl shadow-md transition-colors text-lg w-full md:w-auto">
+                        暖身完畢，進入正式測驗
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 測驗視圖 -->
+        <section id="quiz-view" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <!-- 進度條 -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full" id="quiz-progress-text">進度 1/15</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2.5">
+                        <div id="quiz-progress-bar" class="bg-medical-blue h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+                    </div>
+                </div>
+
+                <!-- 題目區 -->
+                <div class="mb-8">
+                    <h3 id="question-text" class="text-xl md:text-2xl font-bold text-slate-800 leading-relaxed">
+                        題目載入中...
+                    </h3>
+                </div>
+
+                <!-- 選項區 -->
+                <div id="options-container" class="space-y-3">
+                    <!-- 選項按鈕由 JS 動態生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 結算視圖 -->
+        <section id="result-view" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10 text-center mb-8 border-t-8 border-medical-pink">
+                
+                <!-- 動態標籤 -->
+                <div class="flex flex-wrap justify-center gap-2 mb-6" id="result-tags">
+                    <span class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm font-bold shadow-sm" id="tag-mode">完整測驗得分</span>
+                    <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-bold shadow-sm" id="tag-attempt">測驗次數：第 1 次</span>
+                </div>
+
+                <!-- 雲端上傳狀態提示 -->
+                <div id="upload-status" class="mb-6 inline-flex items-center gap-2 bg-amber-50 text-amber-600 px-4 py-2 rounded-full text-sm font-bold">
+                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    正在將成績上傳至雲端...
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 mb-8">
+                    <div class="text-left flex flex-col items-center md:items-start">
+                        <p class="text-sm text-slate-500 font-medium mb-1" id="res-student-id">學號: 載入中</p>
+                        <h2 class="text-6xl font-black text-slate-800 tracking-tight" id="res-student-name">姓名</h2>
+                    </div>
+                    <div class="h-16 w-px bg-slate-200 hidden md:block"></div>
+                    <div class="flex flex-col items-center">
+                        <p class="text-sm text-slate-500 font-medium mb-1">總得分</p>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-6xl font-black text-medical-pink" id="res-score">100</span>
+                            <span class="text-2xl font-bold text-slate-400">分</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-4 mb-6 inline-block w-full max-w-sm">
+                    <div class="flex justify-around">
+                        <div class="text-center">
+                            <p class="text-sm text-slate-500">答對題數</p>
+                            <p class="text-2xl font-bold text-emerald-500" id="res-correct-count">0</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-slate-500">答錯題數</p>
+                            <p class="text-2xl font-bold text-rose-500" id="res-wrong-count">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p id="res-encouragement" class="text-lg font-bold text-slate-700 mb-8"></p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button id="btn-retry" onclick="app.retryMistakes()" class="hidden bg-medical-blue hover:bg-medical-blueHover text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors flex-1 max-w-[200px] mx-auto sm:mx-0">
+                        錯題重做
+                    </button>
+                    <button onclick="app.restartFullQuiz()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-6 rounded-lg shadow-md transition-colors flex-1 max-w-[200px] mx-auto sm:mx-0">
+                        重新完整測驗
+                    </button>
+                </div>
+            </div>
+
+            <!-- 錯題解析區 -->
+            <div id="mistakes-section" class="hidden">
+                <div class="flex items-center gap-2 mb-4 px-2">
+                    <svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <h3 class="text-xl font-bold text-slate-700">錯題精闢解析</h3>
+                </div>
+                <div id="mistakes-container" class="space-y-4">
+                    <!-- 錯題列表由 JS 動態生成 -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // ==========================================================
+        // ⚠️ 請將下方這串網址，替換成你剛剛在 Google Apps Script 取得的「網頁應用程式 URL」
+        // ==========================================================
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_-TDi0uu92XirdX8ze62w_nYk9VGOELmNGTIDZY8EgSGADRq9pFy48H1MTpIAX2UX/exec'; 
+
+
+        // 原始題庫文字資料
+        const rawDatabase = `C
+下列有關第一型過敏反應(hypersensitivity)的敘述，何者錯誤？(A)是由免疫球蛋白E所引起(B)肥大細胞也參與作用(C)大約5～12小時就會出現反應(D)氣喘是屬於其中的一種病理生理反應
+第一型過敏反應屬即發型過敏，典型是 IgE 結合肥大細胞後快速脫顆粒，常在幾分鐘內出現症狀，不是要等 5～12 小時才開始。氣喘、過敏性鼻炎、蕁麻疹都屬常見表現。
+A
+有關第一型過敏反應(Type I hypersensitivity)，下列敘述何者錯誤？(A)肥大細胞被過敏原刺激後，釋出組織胺(histamine)、前列腺素(prostaglandins)、白三烯素(leukotrienes)等物質造成氣管擴張，血管收縮(B)過敏性鼻炎以減敏療法(desensitization)治療可降低 IgE 但增加 IgG 的製造，以達到減少肥大細胞被過敏原刺激，所需時間長達一至兩年(C)避免接觸過敏原是最直接避免發生第一型過敏反應最好的方法(D)皮膚敏感測試(skin test)及測量血中總 IgE 與各過敏原專一性 IgE 是常用之檢測病患是否有第一型過敏疾病的方法
+第一型過敏反應的典型生理變化是支氣管收縮、血管擴張與通透性增加，不是氣管擴張與血管收縮。減敏治療會提升阻斷型 IgG、降低 IgE 效應，避免過敏原仍是最直接的方法。
+C
+因為IgG和可溶性抗原形成免疫複合物(immune complex)造成的過敏反應，屬於那一型過敏反應？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+免疫複合物沉積是第三型過敏反應的核心概念。可溶性抗原和抗體結合後形成複合體，沉積在血管壁、腎絲球或組織中，再活化補體造成發炎與組織傷害。
+D
+結核菌素過敏反應是屬於：(A)即發性過敏反應(B)依賴抗體之細胞毒殺過敏反應(C)免疫複合物過敏反應(D)遲發性過敏反應
+結核菌素反應屬第四型過敏反應，也就是遲發型過敏。它是由 T 細胞媒介，通常在接觸抗原後 24～48 小時才會明顯。
+D
+遲發型過敏反應(delayed type hypersensitivity)屬於何型過敏反應？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+遲發型過敏反應就是第四型過敏反應，重點在 T 細胞與巨噬細胞參與，而不是抗體。
+D
+下列何者非第二型過敏反應(Type II hypersensitivity)引起之疾病？(A)Rh血型陰性的母體所製造的IgG抗體，透過胎盤進到Rh陽性胎兒造成紅血球破壞(B)將Ab型血輸給O型血的人，引起溶血性輸血反應(C)小分子藥物或代謝產物引發自體免疫溶血性貧血(D)巨量免疫複合體沉積引發血清病(serum sickness)
+第二型過敏反應是抗體直接對細胞表面或組織表面抗原發動攻擊。血清病屬於免疫複合體沉積所造成的第三型過敏，不屬於第二型。
+C
+下列何者不屬於第三型過敏反應(Type III hypersensitivity)引起之疾病或反應？(A)血清病(serum sickness)(B)亞都司氏現象(Arthus reaction)(C)肺出血－腎炎綜合症(Goodpasture’s syndrome)(D)系統性紅斑狼瘡之腎絲球腎炎(glomerulonephritis of lupus erythematosus)
+血清病、Arthus 反應和狼瘡腎炎都屬第三型過敏反應。Goodpasture 症候群是抗體直接攻擊基底膜，屬第二型過敏反應。
+A
+對花粉過敏是何種類型的過敏反應？(A)第一型(B)第二型(C)第三型(D)第四型
+花粉過敏屬典型第一型過敏反應，也就是 IgE 介導的即發型過敏。
+A
+注射青黴素(Penicillin)引起之過敏反應屬於第幾型過敏反應？(A)TypeⅠ(B)TypeⅡ(C)TypeⅢ(D)TypeⅣ
+青黴素急性過敏最常考作第一型過敏反應，和 IgE、肥大細胞脫顆粒有關。
+C
+因注射青黴素引起過敏性反應，最可能是由下列何種機制所造成？(A)抗體與抗原結合的免疫複合體沈積(B)抗體與細胞表面抗原結合後，使細胞被破壞(C)免疫球蛋白E 與抗原結合後，造成肥胖細胞的去顆粒化作用(D)T 細胞與抗原接觸分泌淋巴激素，引起肉芽腫反應
+青黴素急性過敏的代表機轉是 IgE 先附著在肥大細胞表面，再被抗原交聯後引發脫顆粒，釋放組織胺等介質。
+A
+第一型過敏反應(type I hypersensitivity)中，主要釋放出組織胺(histamine)的細胞是：(A)肥大細胞(B)B細胞(C)T細胞(D)紅血球
+第一型過敏反應最重要的效應細胞是肥大細胞，脫顆粒後會釋放組織胺，引起血管擴張、通透性增加與支氣管收縮。
+C
+第一型過敏反應是因IgE 與抗原結合後，造成肥大細胞的去顆粒化作用，下列何者是所釋出最重要的原發性介質(primary mediator)？(A)肝素(heparin)(B)補體(complement)(C)組織胺(histamine)(D)前列腺素(prostaglandin)
+肥大細胞去顆粒後最重要、最常考的原發性介質就是組織胺。它能迅速引起過敏症狀。
+B
+抗體IgE與過敏原結合將引發肥大細胞(mast cell)何種作用？(A)溶破其他細胞(B)釋放化學協調素(chemical mediators)(C)補體固定作用(complement fixation)(D)凝集作用(agglutination)
+IgE 與過敏原交聯後，會促使肥大細胞脫顆粒，釋放多種化學介質，例如組織胺、白三烯素與前列腺素。
+C
+IgE的受體(receptor)主要在下列何種細胞？(A)樹突細胞(den-dritic cell)(B)T淋巴細胞(T-lymphocyte)(C)肥胖細胞(mast cell)(D)嗜中性球(neutrophil)
+IgE 最經典的高親和力受體表現在肥大細胞與嗜鹼性球，國考常直接把 IgE 受體和肥大細胞配對。
+C
+IgE抗體會與其高親和力受體FcεRI相結合來誘發過敏反應，而FcεRI受體不表現在下列何種細胞表面？(A)肥大細胞(mast cell)(B)嗜鹼性球(basophil)(C)T細胞(D)活化的嗜酸性球(activated eosinophil)
+FcεRI 是第一型過敏反應的重要 IgE 高親和力受體，典型表現在肥大細胞與嗜鹼性球。T 細胞不是這個受體的典型表現細胞。
+B
+以下何種抗體在第一型過敏反應中扮演重要角色？(A)IgA(B)IgE(C)IgG(D)IgM
+第一型過敏反應的核心抗體就是 IgE。它先附著在肥大細胞表面，再在再次接觸過敏原時引發脫顆粒。
+D
+免疫球蛋白中對體內的肥大細胞和顆粒細胞具有很強的親和性，常與人類過敏性疾病有關，是屬於下列哪一種？(A)IgG(B)IgA(C)IgD(D)IgE
+和肥大細胞、嗜鹼性球親和力高，又和過敏最有關的免疫球蛋白就是 IgE。
+D
+下列哪種免疫球蛋白與過敏反應有關，並對寄生蟲之感染提供保護？(A)IgA(B)IgG(C)IgM(D)IgE
+IgE 除了參與第一型過敏反應，也和抗寄生蟲感染有關，尤其是大型蠕蟲感染。
+D
+在過敏反應中會出現的免疫球蛋白為？(A)IgG(B)IgA(C)IgM(D)IgE
+過敏反應最經典、最常考的抗體就是 IgE，尤其是第一型過敏反應。
+C
+下列何者是與過敏有關的抗體，會與肥大細胞結合？(A)IgM(B)IgD(C)IgE(D)IgD
+會和肥大細胞表面高親和力受體結合，並參與過敏反應的抗體是 IgE。
+B
+與引起即發型過敏症花粉熱(hay fever)有關的因子是？(A)IgG(B)IgE(C)IgA(D)IgE+IgA
+即發型過敏如花粉熱，最關鍵的抗體是 IgE。
+C
+氣喘病人血清中，所出現的免疫球蛋白是？(A)IgA(B)IgD(C)IgE(D)IgG
+過敏性氣喘與 IgE 關係最密切，因此國考看到氣喘加免疫球蛋白，多半就是考 IgE。
+C
+對於魚類、海鮮或是其他食物過敏者，在吃下這類食物後，會很快地出現全身性紅斑，甚至氣管收縮現象，這是由於下列何種抗體所引起？(A)IgM(B)IgG(C)IgE(D)IgA
+快速出現的食物過敏反應屬第一型過敏反應，核心抗體是 IgE。
+B
+減敏治療(hyposensitization)是給患者打過敏原之抽取液，希望其產生何種抗體？(A)IgA(B)IgG(C)IgM(D)IgE
+減敏治療的目標之一是增加阻斷型 IgG，讓過敏原先被 IgG 結合，減少和 IgE 交聯肥大細胞的機會。
+D
+減敏治療是希望增加哪一種抗體？(A)IgM(B)IgD(C)IgE(D)IgG
+減敏治療希望增加 IgG 而不是 IgE，藉此減弱第一型過敏反應。
+A
+何種細胞激素(cytokine)可增強第一型過敏反應的嚴重程度？(A)介白質4(B)丙型干擾素(C)甲型干擾素(D)介白質12
+IL-4 會促進 B 細胞進行類別轉換，產生 IgE，因此會加強第一型過敏反應。
+A
+因肥胖細胞(mast cell)表面Fc receptor接受了IgE及過敏原而誘發之過敏反應屬於？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+IgE 加上肥大細胞脫顆粒，就是第一型過敏反應最標準的考法。
+C
+造成風疹塊(urticaria)的抗體和細胞分別為何？(A)IgG和漿細胞(plasma cells)(B)IgA和巨噬細胞(C)IgE和肥大細胞(mast cells)(D)IgM和嗜酸性白血球(eosinophils)
+風疹塊屬第一型過敏表現，核心組合就是 IgE 和肥大細胞。
+B
+以下何者不屬於第一型過敏反應(type Ⅰ hypersensitivity)？(A)氣喘(asthma)(B)輸血反應(transfusion reaction)(C)溼疹(eczema)(D)枯草熱(hay fever)
+輸血反應屬第二型過敏反應，是抗體直接攻擊紅血球表面抗原所造成，不屬第一型。
+A
+戶外工作者有時會被蜜蜂攻擊而引發休克死亡，請問這是屬於哪一種的過敏反應？(A)第一型(B)第二型(C)第三型(D)第四型
+蜂螫造成的過敏性休克是典型第一型過敏反應，因大量介質釋放導致全身性血管反應。
+A
+過敏性鼻炎是屬於下列哪一型過敏反應？(A)即發型過敏反應(B)抗體依賴性細胞毒殺型過敏反應(C)免疫複合物促成性過敏反應(D)遲發型過敏反應
+過敏性鼻炎屬第一型過敏反應，也就是即發型過敏反應。
+A
+異位性蕁麻疹屬於哪一型過敏？(A)即發型過敏反應(B)抗體依賴細胞毒殺型過敏反應(C)免疫複合體型過敏反應(D)遲發型過敏反應
+蕁麻疹通常屬第一型過敏反應，和 IgE、肥大細胞脫顆粒有關。
+C
+小孩子對家塵中的螨過敏是一種？(A)遲發性過敏反應(B)自體性過敏反應(C)IgE造成的過敏反應(D)免疫複合物引起的過敏反應
+塵蟎過敏最典型就是第一型過敏反應，也就是 IgE 介導的過敏。
+C
+台灣最常見的過敏原為？(A)蟑螂(B)跳蚤(C)塵螨(D)棉花
+在台灣環境中，塵蟎是最常見也最常考的室內過敏原。
+B
+下列那一種細胞不參與過敏性氣喘？(A)TH2 淋巴球(lymphocyte)(B)紅血球(red blood cell)(C)肥大細胞(mast cell)(D)嗜中性球(neutrophil)
+過敏性氣喘和 TH2、IgE、肥大細胞等免疫反應有關，紅血球不參與這類免疫效應。
+C
+下列何者與第一型過敏反應無關？(A)IgE(B)肥大細胞(C)補體(D)花粉
+第一型過敏反應的關鍵是過敏原、IgE 和肥大細胞，不是補體。
+D
+肥大細胞(mast cells)最有效對抗下列何種微生物？(A)腸道上皮細胞中小兒麻痺病毒(B)腸道中的大腸桿菌(C)腸道中的念珠菌(D)腸道中的迴蟲
+肥大細胞和 IgE 反應除了和過敏有關，也有助於對抗寄生蟲，尤其是大型蠕蟲如迴蟲。
+A
+下列那一種致病機制為第四型細胞媒介型過敏反應(type IV cell mediated hypersensitivity)？(A)第一型糖尿病(type I diabetes mellitus)(B)血清病(serum sickness)(C)重症肌無力(myasthenia gravis)(D)惡性貧血(pernicious anemia)
+第一型糖尿病的典型機轉是 T 細胞攻擊胰島 β 細胞，因此屬第四型細胞媒介型過敏反應。
+D
+由化學物質引起的過敏性接觸性皮膚炎，屬於下列何者？(A)即發型過敏反應(B)抗體依賴型細胞毒殺過敏反應(C)免疫複合物過敏反應(D)遲發型過敏反應
+接觸性皮膚炎屬第四型過敏反應，重點是 T 細胞反應，發作時間較慢。
+B
+由於有毒的常春藤而引起的發疹是？(A)沉著的發疹(B)接觸性皮膚炎(C)自體免疫(D)即發性過敏
+毒常春藤是經典的接觸性皮膚炎例子，屬第四型過敏反應。
+D
+手錶帶(含鎳成分)引起之過敏為下列那一型過敏反應(hypersensitivity)？(A)第一型(B)第二型(C)第三型(D)第四型
+含鎳飾品或手錶帶引起的皮膚過敏是典型接觸性皮膚炎，也就是第四型過敏反應。
+B
+下列那類細胞不參與接觸性皮膚炎？(A)Th細胞(B)b細胞(C)巨噬細胞(D)蘭氏(Langerhans’)細胞
+接觸性皮膚炎以 T 細胞、抗原呈現細胞和巨噬細胞為主，不是以 B 細胞為核心。
+C
+下列何者不是經由抗體作用的過敏反應？(A)輸血反應(B)新生兒溶血(C)結核菌素反應(D)腎絲球腎炎
+結核菌素反應屬第四型過敏反應，是 T 細胞媒介，不是抗體媒介。
+D
+下列何者沒有補體的參與？(A)發炎作用(B)血型不合引起的溶血(C)血清病(D)結核菌素型過敏
+結核菌素型過敏屬第四型反應，以 T 細胞與巨噬細胞為主，不是補體主導。
+A
+下列有關過敏反應(hypersensitivity)的敘述，何者正確？(A)一種異常的免疫反應，造成組織傷害(B)由於一再注射異物引起的反應(C)不屬於免疫反應，因沒有抗體的參與(D)目前沒有藥物可減輕過敏
+過敏反應本質上就是異常或過度的免疫反應，會導致組織傷害。它不一定需要反覆注射異物，也不是都沒有治療方法。
+A
+人於初次接觸某種物質時，並無異常反應，但經10~15天後，再接觸同種物質時，組織發生不正常及細胞損害之反應稱為？(A)過敏反應(hypersensitivity)(B)特異性反應(specific reaction)(C)抗原抗體反應(Ag-Ab reaction)(D)二次反應(secondary response)
+題目描述的是先致敏、後再接觸才出現組織傷害的現象，這就是過敏反應的典型概念。
+D
+有關過敏反應之敘述，正確的是？1 IgE可產生所有的過敏反應2結核病菌素過敏反應可由血清被動轉移3 Arthus反應(阿爾楚氏反應)其組織變化有顯著的紅斑及水腫，但細胞浸潤輕微4過敏性休克之發生與IgE、肥大細胞、嗜鹼性白血球均有關(A)12(B)14(C)23(D)34
+IgE 只和第一型過敏有關，不是所有過敏類型都靠 IgE。結核菌素反應是細胞媒介型，不能靠血清被動轉移。過敏性休克和 IgE、肥大細胞、嗜鹼性球有關，因此正確組合是後兩個敘述。
+B
+腎臟移植所產生的超急性排斥反應為何種過敏反應？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+超急性排斥是因為受者體內原本就有抗體，進入移植器官後立刻攻擊血管內皮與細胞表面抗原，因此屬第二型過敏反應。
+B
+腎臟移植時，產生之「極急性排斥(hyperacute graft rejection)」屬何型之過敏反應？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+極急性排斥和超急性排斥是同一類概念，核心是既存抗體快速攻擊移植器官，因此屬第二型。
+B
+新生兒溶血症是屬於：(A)即發性過敏反應(B)依賴抗體之細胞毒殺過敏反應(C)免疫複合物過敏反應(D)遲發性過敏反應
+新生兒溶血症是母體抗體穿過胎盤後攻擊胎兒紅血球，屬第二型過敏反應。
+B
+輸血錯誤所造成的溶血反應屬第幾型的過敏反應？(A)TypeⅠ(B)TypeⅡ(C)TypeⅢ(D)TypeⅣ
+輸血反應是抗體直接攻擊紅血球表面抗原所造成，屬第二型過敏反應。
+B
+輸錯血是屬於下列哪一種過敏反應？(A)過敏性休克反應(B)抗體依賴性細胞毒殺過敏反應(C)免疫複合物反應(D)遲發性過敏反應
+輸錯血後的溶血反應就是典型第二型過敏反應，重點是抗體依賴性細胞毒殺。
+B
+有關不當的輸血反應會造成溶血現象之敘述，下列何者正確？(A)為立即發作的第一型過敏反應(B)是一種抗體依賴性細胞毒殺型過敏反應(C)因抗原抗體複合物過多沉積而造成之過敏反應(D)是T淋巴細胞促成的過敏反應
+不當輸血造成的溶血是抗體直接攻擊紅血球，不是免疫複合體沉積，也不是 T 細胞主導。
+A
+人類腎臟移植時會發生超急性移植排斥反應，主要為下列何種系統不合所引起？(A)ABO 血型(B)Rhd 系統(C)Kell 系統(D)MN 系統
+超急性排斥最典型的原因是 ABO 血型不合，因為受者體內本來就有對應抗體。
+B
+Rhesus d(Rh d)陰性母親可能會在第二胎懷孕時發現胎兒溶血現象，此為何型過敏反應？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+Rh 不合造成的胎兒溶血，是抗體攻擊胎兒紅血球的例子，屬第二型過敏反應。
+C
+血清病屬於何種過敏反應？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+血清病是免疫複合體沉積造成的全身性反應，屬第三型過敏反應。
+C
+皮膚測試中，若見到阿爾楚氏反應(Arthus reaction)則代表何型的過敏反應？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+Arthus 反應是局部免疫複合體沉積反應，屬第三型過敏反應。
+B
+下列何者為產生第三型過敏的主要機制？(A)抗體衣賴性毒殺作用(B)免疫複合體引起補體活化(C)細胞性免疫反應(D)肥大細胞的脫顆粒作用
+第三型過敏反應的核心就是免疫複合體形成後活化補體，進一步引起發炎與組織傷害。
+B
+紅斑性狼瘡是哪一型疾病？(A)抗體依賴性細胞毒殺反應(B)免疫複合物型過敏反應(C)遲發型皮膚過敏反應(D)病毒性傳染性疾病
+系統性紅斑狼瘡最經典的機轉是免疫複合體沉積，因此常歸類為第三型過敏反應。
+C
+以下何種疾病與免疫複合物(immune complex)過多較有關？(A)痲瘋(leprosy)(B)瘧疾(malaria)(C)全身性紅斑性狼瘡(systemic lupus erythematosus)(D)自體性糖尿病(autoimmune diabetes)
+全身性紅斑狼瘡是免疫複合體疾病的代表題，尤其常考到狼瘡腎炎。
+B
+下列何者是造成狼瘡性腎絲球腎炎(lupus nephritis)的主要原因？(A)鈣化(B)免疫複合體沈積(C)類澱粉(amyloid)沈積(D)嗜中性白血球浸潤
+狼瘡性腎炎最核心的病理機轉是免疫複合體沉積在腎絲球，之後活化補體造成發炎。
+C
+類風濕性關節炎為何種過敏反應？(A)第一型過敏反應(B)第二型過敏反應(C)免疫複合物過敏反應(D)遲發性過敏反應
+國考常把類風濕性關節炎歸在第三型過敏反應，重點是免疫複合體與慢性發炎。
+C
+第Ⅲ型過敏性反應所造成的疾病，如類風溼性關節炎(rheumatoid arthritis)，乃肇因於：(A)IgE和肥胖細胞(mast cell)上的Fc受器(receptor)結合，啟動脫顆粒(degranulation)作用(B)CD4＋T細胞活化後，釋放淋巴激素(lym-phokine)，啟動發炎性反應(C)免疫複合體(immune complex)及補體(complement)，啟動古典路徑(classical pathway)補體連鎖反應(D)抗體與細胞表面分子結合，並藉古典路徑補體連鎖反應，使細胞受損
+第三型過敏反應的重點是免疫複合體與補體活化，不是肥大細胞脫顆粒，也不是單純 T 細胞反應。
+D
+為避免發生血清病或過敏性休克，注射下列何種製劑之前，須先在病人身上試驗對馬血清或其他可疑抗原的敏感性？(A)疫苗(B)類毒素(C)過敏原(D)抗毒素
+傳統抗毒素可能來自異種血清，例如馬血清，因此使用前要注意是否會引發血清病或嚴重過敏。
+C
+結核病造成組織病變之原因為何？(A)免疫系統因自然殺手細胞(natural killer cell)對於結核菌的刺激，引起組織破壞(B)免疫系統對結核菌產生的抗體，引起組織破壞(C)活化之巨噬細胞聚集形成肉芽腫(granuloma)，而破壞器官組織(D)對結核菌產生自體抗體，而引起組織破壞
+結核病的組織傷害主要來自細胞性免疫反應，活化的巨噬細胞聚集形成肉芽腫，進一步破壞組織。
+A
+結核性肉芽腫(tuberculous granuloma)之形成，主要是由哪些細胞所主導？(A)吞噬細胞、T細胞(B)表皮細胞、肥大細胞(mast cells)(C)吞噬細胞、肥大細胞(D)肺泡細胞、b細胞
+結核性肉芽腫形成的核心是 T 細胞活化巨噬細胞，因此以吞噬細胞與 T 細胞最重要。
+B
+使結核菌素皮膚試驗(tuberculin skin)產生陽性反應的因子為？(A)結核菌素之毒性(B)遲發性過敏型T淋巴球(C)毒殺型T淋巴球(D)補體固定反應
+結核菌素試驗陽性來自先前已致敏的 T 細胞反應，不是毒性本身，也不是補體反應。
+B
+使結核菌素皮膚試驗(tuberculin test)產生陽性反應的因子是？(A)結核菌素之毒性(B)T淋巴球(C)B淋巴球(D)補體固定反應
+結核菌素試驗屬第四型過敏反應，主角是 T 淋巴球。
+A
+結核菌素(tuberculin)皮膚試驗的陽性反應之敘述，下列何者正確？(A)有T淋巴細胞的參與(B)屬於體液性免疫力(C)是第一型即發性過敏反應(D)組織反應以嗜中性球的浸潤為主
+結核菌素試驗的陽性反應是 T 細胞媒介的遲發型反應，不屬體液性免疫，也不是第一型過敏。
+D
+過敏反應有數種型態，因T細胞及巨噬細胞的參與而引起的過敏反應是屬於？(A)第一型過敏反應(B)第二型過敏反應(C)第三型過敏反應(D)第四型過敏反應
+若題幹強調 T 細胞與巨噬細胞，就是第四型過敏反應的典型特徵。
+C
+第四型過敏反應主要是由那一種細胞媒介？(A)Th1及肥大細胞(B)Th2及肥大細胞(C)Th1及巨噬細胞(D)Th2及巨噬細胞
+第四型過敏反應的代表組合是 Th1 細胞與巨噬細胞，不是肥大細胞，也不是 Th2 反應。
+B
+下列有關遲緩型過敏反應(delayed type hypersensitivity)的敘述何者正確？(A)由CD8 T細胞所媒介(B)為對抗細胞內細菌的重要防禦機制(C)可用來檢測感染病毒的數量(D)需要抗體的參與
+遲發型過敏反應除了和過敏分類有關，也代表人體對抗細胞內細菌的重要防禦機制，例如結核菌。
+D
+下列何者屬於細胞型過敏免疫反應(cell-mediated hypersensitivity)？(A)花粉熱(hay fever)(B)古德巴斯德症候群(Goodpasture syndrome)(C)血清病(serum sickness)(D)結核病(tuberculosis)
+細胞型過敏就是第四型過敏反應，結核病是最經典的例子。
+A
+下列何者為延遲型過敏反應？(A)接觸型過敏性皮膚炎(B)輸血反應(C)蕁麻疹(D)過敏性肺泡炎
+接觸型過敏性皮膚炎是國考最常見的遲發型過敏反應代表題。
+B
+遲發性過敏反應之接觸性皮膚炎的特性為何？(A)預先存在的抗體而引起接觸性皮膚炎(B)先前碰觸過敏原，因而預先激活了免疫細胞(C)由IgE抗體引起接觸性皮膚炎(D)預先存在的抗原抗體複合體，引起接觸性皮膚炎
+接觸性皮膚炎要先經過致敏，再次碰到抗原時，已致敏的免疫細胞才會啟動反應。
+B
+下列何種過敏原非引起第四型過敏反應？(A)鎳(nickel)(B)塵蟎(mite)(C)橡膠(rubber)(D)有毒植物(如poison ivy)
+鎳、橡膠、有毒植物都常見於接觸性皮膚炎；塵蟎則多屬第一型過敏反應。
+C
+以下自體免疫疾病，何者不屬於第二型過敏反應？(A)格雷夫氏病(B)重症肌無力(C)類風濕性關節炎(D)古德阿帕斯氏症候群
+Graves 病、重症肌無力和 Goodpasture 症候群常歸類在第二型；類風濕性關節炎多半歸在第三型。`;
+
+        // 暖身題庫
+        const warmupData = [
+            { q: "下列哪一型過敏反應發作最快，通常在數分鐘內出現症狀？", options: ["第一型", "第二型", "第三型", "第四型"], ans: 0 },
+            { q: "第一型過敏反應最主要與下列哪一種抗體有關？", options: ["IgA", "IgE", "IgG", "IgM"], ans: 1 },
+            { q: "下列何者是第一型過敏反應常見參與的細胞？", options: ["紅血球", "肥大細胞", "血小板", "漿細胞"], ans: 1 },
+            { q: "ABO 血型不合輸血反應最屬於哪一型過敏反應？", options: ["第一型", "第二型", "第三型", "第四型"], ans: 1 },
+            { q: "第二型過敏反應最典型的特徵是什麼？", options: ["免疫複合物沉積", "T 細胞直接作用", "抗體直接攻擊細胞表面", "組織胺大量釋放"], ans: 2 },
+            { q: "下列哪一種過敏反應與免疫複合物沉積最有關？", options: ["第一型", "第二型", "第三型", "第四型"], ans: 2 },
+            { q: "全身性紅斑狼瘡（SLE）最常歸類為哪一型過敏反應？", options: ["第一型", "第二型", "第三型", "第四型"], ans: 2 },
+            { q: "唯一不靠抗體、主要由 T 細胞主導的是哪一型過敏反應？", options: ["第一型", "第二型", "第三型", "第四型"], ans: 3 },
+            { q: "接觸性皮膚炎最常屬於哪一型過敏反應？", options: ["第一型", "第二型", "第三型", "第四型"], ans: 3 },
+            { q: "結核菌素皮膚試驗（PPD）屬於哪一型過敏反應？", options: ["第一型", "第二型", "第三型", "第四型"], ans: 3 }
+        ];
+
+        // 應用程式狀態管理器
+        const app = {
+            db: [],
+            activeQuiz: [],
+            wrongQuestions: [],
+            state: {
+                studentName: '',
+                studentId: '',
+                attemptCount: 1,
+                currentMode: 'full',
+                currentIndex: 0,
+                isAnswering: false
+            },
+
+            init() {
+                this.parseDatabase();
+            },
+
+            parseDatabase() {
+                const lines = rawDatabase.trim().split('\n').filter(l => l.trim() !== '');
+                for (let i = 0; i < lines.length; i += 3) {
+                    const ansLetter = lines[i].trim();
+                    const qLine = lines[i+1].trim();
+                    const expLine = lines[i+2].trim();
+
+                    const match = qLine.match(/(.*?)\(A\)(.*?)\(B\)(.*?)\(C\)(.*?)\(D\)(.*)/);
+                    if (match) {
+                        const question = match[1].trim();
+                        const options = [ match[2].trim(), match[3].trim(), match[4].trim(), match[5].trim() ];
+                        const correctIndex = ansLetter.charCodeAt(0) - 65; 
+                        
+                        this.db.push({
+                            id: i / 3,
+                            question: question,
+                            originalOptions: options,
+                            correctText: options[correctIndex],
+                            explanation: expLine
+                        });
+                    }
+                }
+            },
+
+            shuffle(array) {
+                let currentIndex = array.length, randomIndex;
+                while (currentIndex != 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+                    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+                }
+                return array;
+            },
+
+            switchView(viewId) {
+                ['login-view', 'prep-view', 'quiz-view', 'result-view'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                document.getElementById(viewId).classList.remove('hidden');
+                
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+            },
+
+            goToPrep() {
+                const nameInput = document.getElementById('student-name').value.trim();
+                const idInput = document.getElementById('student-id').value.trim();
+
+                if (!nameInput || !idInput) {
+                    alert('請輸入姓名與學號！');
+                    return;
+                }
+
+                this.state.studentName = nameInput;
+                this.state.studentId = idInput;
+                
+                this.renderWarmup();
+                this.switchView('prep-view');
+            },
+
+            renderWarmup() {
+                const container = document.getElementById('warmup-container');
+                container.innerHTML = '';
+                warmupData.forEach((item, index) => {
+                    const qBlock = document.createElement('div');
+                    qBlock.className = "bg-slate-50 p-5 rounded-xl border border-slate-100";
+                    
+                    let optionsHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">';
+                    item.options.forEach((opt, optIdx) => {
+                        const prefix = String.fromCharCode(65 + optIdx);
+                        optionsHtml += `
+                            <button onclick="app.checkWarmup(this, ${optIdx}, ${item.ans})" class="text-left p-3 rounded-lg border-2 border-slate-200 bg-white hover:bg-emerald-50 hover:border-emerald-300 transition-all text-slate-700 font-medium">
+                                <span class="font-bold text-slate-400 mr-2">${prefix}.</span>${opt}
+                            </button>
+                        `;
+                    });
+                    optionsHtml += '</div>';
+
+                    qBlock.innerHTML = `<h4 class="font-bold text-slate-800 text-lg">${index + 1}. ${item.q}</h4>${optionsHtml}`;
+                    container.appendChild(qBlock);
+                });
+            },
+
+            checkWarmup(btn, selectedIdx, correctIdx) {
+                const parent = btn.parentElement;
+                const buttons = parent.querySelectorAll('button');
+                
+                buttons.forEach(b => {
+                    b.style.pointerEvents = 'none';
+                    b.classList.remove('hover:bg-emerald-50', 'hover:border-emerald-300');
+                });
+
+                if (selectedIdx === correctIdx) {
+                    btn.classList.remove('border-slate-200', 'bg-white');
+                    btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+                    btn.innerHTML += '<span class="float-right text-lg">✅</span>';
+                } else {
+                    btn.classList.remove('border-slate-200', 'bg-white');
+                    btn.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-800');
+                    btn.innerHTML += '<span class="float-right text-lg">❌</span>';
+                    
+                    const correctBtn = buttons[correctIdx];
+                    correctBtn.classList.remove('border-slate-200', 'bg-white');
+                    correctBtn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+                    correctBtn.innerHTML += '<span class="float-right text-lg">✅</span>';
+                }
+            },
+
+            startFullQuiz() {
+                this.state.attemptCount = 1;
+                this.state.currentMode = 'full';
+                this.loadQuiz(this.db);
+                this.switchView('quiz-view');
+            },
+
+            restartFullQuiz() {
+                this.state.attemptCount++;
+                this.state.currentMode = 'full';
+                this.loadQuiz(this.db);
+                this.switchView('quiz-view');
+            },
+
+            retryMistakes() {
+                this.state.attemptCount++;
+                this.state.currentMode = 'retry';
+                this.loadQuiz(this.wrongQuestions);
+                this.switchView('quiz-view');
+            },
+
+            loadQuiz(sourceData) {
+                let shuffledDb = this.shuffle([...sourceData]);
+                this.activeQuiz = shuffledDb.map(q => {
+                    let shuffledOptions = this.shuffle([...q.originalOptions]);
+                    return { ...q, options: shuffledOptions, userSelectedText: null, isCorrect: false };
+                });
+                this.state.currentIndex = 0;
+                this.renderQuestion();
+            },
+
+            renderQuestion() {
+                this.state.isAnswering = false;
+                const currentQ = this.activeQuiz[this.state.currentIndex];
+                const total = this.activeQuiz.length;
+                const progressNum = this.state.currentIndex + 1;
+
+                document.getElementById('quiz-progress-text').innerText = `進度 ${progressNum} / ${total}`;
+                document.getElementById('quiz-progress-bar').style.width = `${(progressNum / total) * 100}%`;
+                document.getElementById('question-text').innerText = `${progressNum}. ${currentQ.question}`;
+
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = '';
+                
+                currentQ.options.forEach((optText, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = `w-full text-left p-4 rounded-xl border-2 border-slate-100 bg-slate-50 hover:bg-sky-50 hover:border-sky-200 transition-all text-slate-700 font-medium text-lg`;
+                    const prefix = String.fromCharCode(65 + index);
+                    btn.innerHTML = `<span class="inline-block w-8 font-bold text-slate-400">${prefix}.</span> ${optText}`;
+                    btn.onclick = () => this.selectOption(btn, optText);
+                    optionsContainer.appendChild(btn);
+                });
+            },
+
+            selectOption(btnElement, selectedText) {
+                if (this.state.isAnswering) return; 
+                this.state.isAnswering = true;
+
+                const allButtons = document.getElementById('options-container').querySelectorAll('button');
+                allButtons.forEach(b => {
+                    b.classList.remove('hover:bg-sky-50', 'hover:border-sky-200');
+                    b.style.pointerEvents = 'none';
+                });
+
+                btnElement.classList.remove('border-slate-100', 'bg-slate-50');
+                btnElement.classList.add('bg-sky-100', 'border-sky-400', 'text-sky-700', 'shadow-sm');
+
+                const currentQ = this.activeQuiz[this.state.currentIndex];
+                currentQ.userSelectedText = selectedText;
+                currentQ.isCorrect = (selectedText === currentQ.correctText);
+
+                setTimeout(() => {
+                    if (this.state.currentIndex < this.activeQuiz.length - 1) {
+                        this.state.currentIndex++;
+                        this.renderQuestion();
+                    } else {
+                        this.showResults();
+                    }
+                }, 400);
+            },
+
+            showResults() {
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+
+                this.wrongQuestions = this.activeQuiz.filter(q => !q.isCorrect);
+                const correctCount = this.activeQuiz.length - this.wrongQuestions.length;
+                const score = Math.round((correctCount / this.activeQuiz.length) * 100);
+
+                document.getElementById('res-student-name').innerText = this.state.studentName;
+                document.getElementById('res-student-id').innerText = `學號: ${this.state.studentId}`;
+                document.getElementById('res-score').innerText = score;
+                document.getElementById('res-correct-count').innerText = correctCount;
+                document.getElementById('res-wrong-count').innerText = this.wrongQuestions.length;
+
+                const tagMode = document.getElementById('tag-mode');
+                const modeText = this.state.currentMode === 'full' ? '完整測驗' : '錯題重做';
+                tagMode.innerText = modeText + '得分';
+                tagMode.className = this.state.currentMode === 'full' 
+                    ? 'px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm font-bold shadow-sm'
+                    : 'px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-bold shadow-sm';
+                
+                document.getElementById('tag-attempt').innerText = `測驗次數：第 ${this.state.attemptCount} 次`;
+
+                const encEl = document.getElementById('res-encouragement');
+                if (score === 100) {
+                    encEl.innerText = "🎉 太棒了！完全正確，你已經完全掌握本章節！";
+                    encEl.className = "text-lg font-bold text-emerald-600 mb-8";
+                } else if (score >= 80) {
+                    encEl.innerText = "✨ 表現優異！只差一點點就滿分囉！";
+                    encEl.className = "text-lg font-bold text-medical-blue mb-8";
+                } else if (score >= 60) {
+                    encEl.innerText = "👍 不錯喔！已經具備基礎概念，把錯題弄懂就更強了！";
+                    encEl.className = "text-lg font-bold text-amber-500 mb-8";
+                } else {
+                    encEl.innerText = "💪 別氣餒！護理學習需要時間，我們再接再厲！";
+                    encEl.className = "text-lg font-bold text-rose-500 mb-8";
+                }
+
+                const mistakesSection = document.getElementById('mistakes-section');
+                const mistakesContainer = document.getElementById('mistakes-container');
+                const btnRetry = document.getElementById('btn-retry');
+
+                if (this.wrongQuestions.length > 0) {
+                    mistakesSection.classList.remove('hidden');
+                    btnRetry.classList.remove('hidden');
+                    
+                    mistakesContainer.innerHTML = '';
+                    this.wrongQuestions.forEach((q, idx) => {
+                        mistakesContainer.innerHTML += `
+                            <div class="bg-rose-50 border border-rose-100 rounded-xl p-5">
+                                <p class="font-bold text-slate-800 mb-3 text-lg">${idx + 1}. ${q.question}</p>
+                                <div class="bg-white rounded-lg p-3 mb-3 border border-slate-100">
+                                    <span class="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-1 rounded uppercase mr-2">正確答案</span>
+                                    <span class="text-slate-700 font-medium">${q.correctText}</span>
+                                </div>
+                                <p class="text-slate-600 leading-relaxed text-sm"><span class="font-bold text-slate-500 mr-1">✏️ 解析：</span>${q.explanation}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    mistakesSection.classList.add('hidden');
+                    btnRetry.classList.add('hidden');
+                }
+
+                this.switchView('result-view');
+                
+                // 呼叫上傳成績函式
+                this.uploadScoreToGoogleSheet(score, modeText);
+            },
+
+            // 將成績送往 Google Sheet
+            uploadScoreToGoogleSheet(score, modeText) {
+                const statusEl = document.getElementById('upload-status');
+                
+                // 如果老師沒有填寫網址，就不執行上傳並隱藏提示
+                if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('請將你的')) {
+                    statusEl.style.display = 'none';
+                    return;
+                }
+
+                // 準備上傳的資料
+                const payload = {
+                    name: this.state.studentName,
+                    id: this.state.studentId,
+                    score: score,
+                    attempt: this.state.attemptCount,
+                    mode: modeText
+                };
+
+                // 設定上傳狀態為轉圈圈
+                statusEl.className = "mb-6 inline-flex items-center gap-2 bg-amber-50 text-amber-600 px-4 py-2 rounded-full text-sm font-bold";
+                statusEl.innerHTML = `<svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> 正在將成績上傳至雲端...`;
+                statusEl.style.display = 'inline-flex';
+
+                // 使用 fetch 傳送資料
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8', // 使用 text/plain 可避免 CORS 問題
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.result === 'success') {
+                        statusEl.className = "mb-6 inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-full text-sm font-bold fade-in";
+                        statusEl.innerHTML = `✅ 成績已成功自動上傳儲存！`;
+                    }
+                })
+                .catch(error => {
+                    console.error('上傳失敗:', error);
+                    statusEl.className = "mb-6 inline-flex items-center gap-2 bg-rose-50 text-rose-600 px-4 py-2 rounded-full text-sm font-bold fade-in";
+                    statusEl.innerHTML = `❌ 成績上傳失敗，請稍後重試或截圖給老師`;
+                });
+            }
+        };
+
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
